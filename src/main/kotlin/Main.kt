@@ -7,7 +7,7 @@ import com.github.kotlintelegrambot.extensions.filters.Filter
 import com.google.gson.Gson
 import java.io.File
 
-const val BOT_TOKEN = "7212513557:AAFFNPYpgZNn28R2-uefAJaKUnydKq6T5Ag"
+const val BOT_TOKEN = "7376283756:AAH6bsYn2N_DgunpNx3BLA3EFVUULiB1T6U"
 
 sealed interface State {
     data object DefaultState: State
@@ -83,10 +83,9 @@ class ContactsRepository {
     }
     fun deleteContact(query: String): String {
         val dc = contacts.get(query.toInt()).name
-        return dc
         contacts.removeAt(query.toInt())
         save()
-
+        return dc
     }
 }
 
@@ -170,7 +169,6 @@ fun main() {
 
                     is State.WaitingSearthNameState -> {
                         val name = this.message.text.toString()
-                        contactsRepository.search(name)
                         val rez = contactsRepository.search(name)
                         bot.sendMessage(chatId = ChatId.fromId(message.chat.id), text = "Ваш номер: $rez")
                         state = State.DefaultState
@@ -178,9 +176,7 @@ fun main() {
 
                     is State.WaitingDeleteNameState -> {
                         val delConRead = this.message.text.toString()
-                        contactsRepository.deleteContact(delConRead)
                         val dc = contactsRepository.deleteContact(delConRead)
-                        println(dc)
                         bot.sendMessage(chatId = ChatId.fromId(message.chat.id), text = "Контакт ($dc) удалён!")
                         state = State.DefaultState
 

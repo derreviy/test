@@ -60,7 +60,7 @@ class ContactsRepository {
 
 
         if (serthRez != null) {
-            var rezult = "\n${serthRez.name} " + ":" + " ${serthRez.phone}"
+            val rezult = "\n${serthRez.name} " + ":" + " ${serthRez.phone}"
             rezultat = rezult
         }
         else {
@@ -73,12 +73,10 @@ class ContactsRepository {
     }
     fun seeContact(info: String): String {
         var allCon = ""
-        var id = 0
-        for (con in contacts) {
+        for ((id, con) in contacts.withIndex()) {
 
-            var see = "\n" + id.toString() + "  " + con.name + ":" + con.phone
-            allCon = allCon + see
-            id ++
+            val see = "\n" + id.toString() + "  " + con.name + ":" + con.phone
+            allCon += see
         }
         return allCon
     }

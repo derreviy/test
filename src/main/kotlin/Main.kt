@@ -155,12 +155,23 @@ fun main() {
                     }
                     is State.WaitingNameState -> {
                         val name = this.message.text.toString()
+
+                        if(!Validator.validateName(name)) {
+                            bot.sendMessage(chatId = ChatId.fromId(message.chat.id), text = "Wrong name!")
+                            return@message
+                        }
+
                         state = State.WaitingPhoneState(name)
                         bot.sendMessage(chatId = ChatId.fromId(message.chat.id), text = "Теперь номер:")
                     }
                     is State.WaitingPhoneState -> {
                         val name = (state as State.WaitingPhoneState).name
                         val phone = this.message.text.toString()
+
+                        if(!Validator.validatePhoneNumber(phone)) {
+                            bot.sendMessage(chatId = ChatId.fromId(message.chat.id), text = "Wrong phone, only + and numbers!")
+                            return@message
+                        }
 
                         bot.sendMessage(chatId = ChatId.fromId(message.chat.id), text = "Добавленый номер: \n$name : $phone")
                         contactsRepository.add(name, phone)

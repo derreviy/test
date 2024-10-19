@@ -4,7 +4,7 @@ import com.github.kotlintelegrambot.dispatcher.command
 import com.github.kotlintelegrambot.dispatcher.message
 import com.github.kotlintelegrambot.entities.ChatId
 import com.github.kotlintelegrambot.extensions.filters.Filter
-import com.google.gson.Gson
+import com.github.kotlintelegrambot.repositories.ContactsRepository
 import java.io.File
 
 const val BOT_TOKEN = "7212513557:AAFFNPYpgZNn28R2-uefAJaKUnydKq6T5Ag"

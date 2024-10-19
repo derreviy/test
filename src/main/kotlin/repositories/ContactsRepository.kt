@@ -1,5 +1,7 @@
-package com.github.kotlintelegrambot
+package com.github.kotlintelegrambot.repositories
 
+import com.github.kotlintelegrambot.Contact
+import com.github.kotlintelegrambot.ContactsArray
 import com.google.gson.Gson
 import java.io.File
 

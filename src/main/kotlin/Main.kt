@@ -3,11 +3,9 @@ package com.github.kotlintelegrambot
 import com.github.kotlintelegrambot.dispatcher.command
 import com.github.kotlintelegrambot.dispatcher.message
 import com.github.kotlintelegrambot.entities.ChatId
-import com.github.kotlintelegrambot.entities.keyboard.InlineKeyboardButton
 import com.github.kotlintelegrambot.extensions.filters.Filter
 import com.google.gson.Gson
 import java.io.File
-import java.net.URL
 
 
 sealed interface State {

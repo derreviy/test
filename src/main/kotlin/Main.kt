@@ -7,6 +7,7 @@ import com.github.kotlintelegrambot.extensions.filters.Filter
 import com.google.gson.Gson
 import java.io.File
 
+const val BOT_TOKEN = "7212513557:AAFFNPYpgZNn28R2-uefAJaKUnydKq6T5Ag"
 
 sealed interface State {
     data object DefaultState: State
@@ -97,7 +98,7 @@ fun main() {
     var state: State = State.DefaultState
 
     val bot = bot {
-        token = "7212513557:AAFFNPYpgZNn28R2-uefAJaKUnydKq6T5Ag"
+        token = BOT_TOKEN
         dispatch {
 
             command("start") {

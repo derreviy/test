@@ -143,8 +143,9 @@ fun main() {
                 state = State.WaitingDeleteNameState
             }
             command("code"){
-                val file = File("D/myBot")
-                bot.sendDocument(ChatId.fromId(message.chat.id), file)
+                val projectFolder = File(".")
+                val archive = Zip.zipFolder(projectFolder, "sources")
+                bot.sendDocument(ChatId.fromId(message.chat.id), archive)
             }
 
             message(filter = Filter.Text) {

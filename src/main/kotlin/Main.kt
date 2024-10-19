@@ -4,92 +4,13 @@ import com.github.kotlintelegrambot.dispatcher.command
 import com.github.kotlintelegrambot.dispatcher.message
 import com.github.kotlintelegrambot.entities.ChatId
 import com.github.kotlintelegrambot.extensions.filters.Filter
-import com.google.gson.Gson
+import com.github.kotlintelegrambot.repositories.ContactsRepository
 import java.io.File
 
 const val BOT_TOKEN = "7212513557:AAFFNPYpgZNn28R2-uefAJaKUnydKq6T5Ag"
 
-sealed interface State {
-    data object DefaultState: State
-    data object WaitingNameState: State
-    data class WaitingPhoneState(val name: String): State
-    data object WaitingSearthNameState: State
-    data object WaitingDeleteNameState: State
-
-}
-
 data class Contact(val name: String, val phone: String)
 data class ContactsArray(val contacts: ArrayList<Contact>)
-
-class ContactsRepository {
-    private val gson = Gson()
-    private val file = File("contacts.json")
-    private val contacts = arrayListOf<Contact>()
-
-    fun load() {
-        if(!file.exists()) file.createNewFile()
-
-
-        val text2 = file.readText()
-        if(text2.isNotEmpty()) {
-            val contacts2 = gson.fromJson(text2, ContactsArray::class.java)
-            val contactsArray2: ArrayList<Contact> = contacts2.contacts
-
-            contacts.clear()
-            contacts.addAll(contactsArray2)
-            println(contacts)
-        }
-    }
-
-    fun save() {
-        val contactsArray = ContactsArray(contacts)
-        val text = gson.toJson(contactsArray)
-        file.writeText(text)
-    }
-
-    fun getAll(): ArrayList<Contact> {
-        return contacts
-    }
-
-    fun add(name: String,phone: String) {
-        contacts.add(Contact(name, phone))
-    }
-
-    fun search(query: String): String {
-        var rezultat = ""
-        val serthRez = contacts.find { it.name == query }
-
-
-        if (serthRez != null) {
-            val rezult = "\n${serthRez.name} " + ":" + " ${serthRez.phone}"
-            rezultat = rezult
-        }
-        else {
-            val  notFound = "\nnot found"
-            return  notFound
-
-        }
-        return rezultat
-
-    }
-    fun seeContact(info: String): String {
-        var allCon = ""
-        for ((id, con) in contacts.withIndex()) {
-
-            val see = "\n" + id.toString() + "  " + con.name + ":" + con.phone
-            allCon += see
-        }
-        return allCon
-    }
-    fun deleteContact(query: String): String {
-        val dc = contacts.get(query.toInt()).name
-        return dc
-        contacts.removeAt(query.toInt())
-        save()
-
-    }
-}
-
 
 fun main() {
     println("Started")
@@ -144,8 +65,9 @@ fun main() {
                 state = State.WaitingDeleteNameState
             }
             command("code"){
-                val file = File("D/myBot")
-                bot.sendDocument(ChatId.fromId(message.chat.id), file)
+                val projectFolder = File(".")
+                val archive = Zip.zipFolder(projectFolder, "sources")
+                bot.sendDocument(ChatId.fromId(message.chat.id), archive)
             }
 
             message(filter = Filter.Text) {
@@ -155,12 +77,23 @@ fun main() {
                     }
                     is State.WaitingNameState -> {
                         val name = this.message.text.toString()
+
+                        if(!Validator.validateName(name)) {
+                            bot.sendMessage(chatId = ChatId.fromId(message.chat.id), text = "Wrong name!")
+                            return@message
+                        }
+
                         state = State.WaitingPhoneState(name)
                         bot.sendMessage(chatId = ChatId.fromId(message.chat.id), text = "Теперь номер:")
                     }
                     is State.WaitingPhoneState -> {
                         val name = (state as State.WaitingPhoneState).name
                         val phone = this.message.text.toString()
+
+                        if(!Validator.validatePhoneNumber(phone)) {
+                            bot.sendMessage(chatId = ChatId.fromId(message.chat.id), text = "Wrong phone, only + and numbers!")
+                            return@message
+                        }
 
                         bot.sendMessage(chatId = ChatId.fromId(message.chat.id), text = "Добавленый номер: \n$name : $phone")
                         contactsRepository.add(name, phone)
@@ -170,7 +103,6 @@ fun main() {
 
                     is State.WaitingSearthNameState -> {
                         val name = this.message.text.toString()
-                        contactsRepository.search(name)
                         val rez = contactsRepository.search(name)
                         bot.sendMessage(chatId = ChatId.fromId(message.chat.id), text = "Ваш номер: $rez")
                         state = State.DefaultState
@@ -178,9 +110,7 @@ fun main() {
 
                     is State.WaitingDeleteNameState -> {
                         val delConRead = this.message.text.toString()
-                        contactsRepository.deleteContact(delConRead)
                         val dc = contactsRepository.deleteContact(delConRead)
-                        println(dc)
                         bot.sendMessage(chatId = ChatId.fromId(message.chat.id), text = "Контакт ($dc) удалён!")
                         state = State.DefaultState
 

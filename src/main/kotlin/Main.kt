@@ -98,7 +98,7 @@ fun main() {
     var state: State = State.DefaultState
 
     val bot = bot {
-        token = BOT_TOKEN
+        token = BOT_TOKEN // Bot token
         dispatch {
 
             command("start") {
